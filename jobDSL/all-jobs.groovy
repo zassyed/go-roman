@@ -4,7 +4,7 @@
 
 // Variable re-used in the jobs
 PROJ_NAME="webserver"
-REPO_URL="https://github.com/${GITHUB_USERNAME}/dayofdocker15.git"
+REPO_URL="https://github.com/${GITHUB_USERNAME}/gowebserver.git"
 
 // Configured to use to define the build pipeline as well
 FIRST_JOB_NAME="1.build-${PROJ_NAME}_GEN"
@@ -170,8 +170,8 @@ job("3.release-${PROJ_NAME}_GEN") {
   logRotator( -1, 5 ,-1 ,-1 )
   steps {
     shell('''#!/bin/bash
-sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:latest 
-sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:$VERSION 
+sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:latest
+sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:$VERSION
 # no git here yet
 # sudo docker tag http-app/http-app:$(git describe)
 sudo docker rm -f deploy-app
