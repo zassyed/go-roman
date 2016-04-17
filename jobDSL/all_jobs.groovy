@@ -42,13 +42,13 @@ version\\.txt'''
     shell('''#!/bin/bash -x
 echo "version=\$(cat version.txt)" > props.env
 
-cd GoWebServer
-imageid=$(sudo docker build -q -t ${GITHUB_USERNAME}/http-app:snapshot . 2>/dev/null | awk '/Successfully built/{print $NF}')
+imageid=$(sudo docker build -q -t ${GITHUB_USERNAME}/http-app:snapshot . 2>/dev/null | awk -F ":" '{print $2}')
 
 sudo docker rm -f testing-app
 cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${GITHUB_USERNAME}/http-app:snapshot)
-echo "cid=$cid" >> ../props.env
-echo "IMAGEID=$imageid" >> ../props.env
+echo "cid=$cid" >> props.env
+echo "IMAGEID=$imageid" >> props.env
+cat props.env
 cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cid})
 sudo docker run --rm siege-engine -g http://$cip:8000/
 [ $? -ne 0 ] && exit 1
