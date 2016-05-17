@@ -50,7 +50,7 @@ echo "cid=$cid" >> props.env
 echo "IMAGEID=$imageid" >> props.env
 cat props.env
 cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cid})
-sudo docker run --rm siege-engine -g http://$cip:8000/
+sudo docker run --rm rufus/siege-engine -g http://$cip:8000/
 [ $? -ne 0 ] && exit 1
 sudo docker kill ${cid}
 sudo docker rm ${cid}''')
@@ -84,7 +84,7 @@ echo "testing_cid=$testing_cid" > props.env
     }
     shell('''#!/bin/bash -x
 cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${testing_cid})
-sudo docker run --rm siege-engine http://$cip:8000/ > output 2>&1
+sudo docker run --rm rufus/siege-engine http://$cip:8000/ > output 2>&1
 ''')
     shell('''#!/bin/bash
 avail=$(cat output | grep Availability)
