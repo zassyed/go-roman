@@ -11,12 +11,6 @@ FIRST_JOB_NAME="1.build-${PROJ_NAME}_GEN"
 
 job("${FIRST_JOB_NAME}") {
   logRotator( -1, 5 ,-1 ,-1 )
-  parameters {
-    stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
-    stringParam('version', '', 'version of the application')
-    stringParam('IMAGEID', '', 'The docker image to test')
-    stringParam('cid', '', 'The container ID')
-  }
   scm {
     git {
       remote {
@@ -79,6 +73,12 @@ sudo docker rm ${cid}''')
 
 job("2.test-${PROJ_NAME}_GEN") {
   logRotator( -1, 40 ,-1 ,-1 )
+    parameters {
+      stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
+      stringParam('version', '', 'version of the application')
+      stringParam('IMAGEID', '', 'The docker image to test')
+      stringParam('cid', '', 'The container ID')
+    }
   steps {
     shell('''#!/bin/bash -x
 sudo docker rm -f testing-app
@@ -174,6 +174,10 @@ cat output.csv
 
 job("3.release-${PROJ_NAME}_GEN") {
   logRotator( -1, 5 ,-1 ,-1 )
+    parameters {
+      stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
+      stringParam('VERSION', '', 'version of the application')
+    }
   steps {
     shell('''#!/bin/bash
 sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:latest
