@@ -11,6 +11,12 @@ FIRST_JOB_NAME="1.build-${PROJ_NAME}_GEN"
 
 job("${FIRST_JOB_NAME}") {
   logRotator( -1, 5 ,-1 ,-1 )
+  parameters {
+    stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
+    stringParam('version', '', 'version of the application')
+    stringParam('IMAGEID', '', 'The docker image to test')
+    stringParam('cid', '', 'The container ID')
+  }
   scm {
     git {
       remote {
