@@ -105,60 +105,9 @@ else
 	exit 1
 fi
 ''')
-    shell('''#We want a groovy script for parsing siege output into CSV
-#As this job is not actually pulling code from git, we are just creating the groovy script here to make life easier.
 
-#Remove any old version
-rm -f parse.groovy
-
-#Cat the whole groovy script to a file
-cat <<EOT >> parse.groovy
-def columns = ["Transactions","Elapsed time","Data transferred","Response time","Transaction rate","Throughput","Concurrency"]
-
-
-def input = new File('output')
-def map = new LinkedHashMap<String, String>()
-
-input.eachLine { line ->
-  columns.each { column ->
-    if(line.startsWith(column)){
-      def val = (line =~ /[\\w ]*:[\\s]*([\\d.]*)[ \\n]?.*/)
-      if(val.matches())
-        map.put(column, val.group(1))
-      else
-        println "Failed for " + line
-    }
-  }
-}
-
-def output = new File('output.csv')
-if(output.exists())
-output.delete()
-map.keySet().each {output.append(it+",")}
-output.append("\\n")
-map.values().each {output.append(it+",")}
-EOT
-''')
-    shell('''
-echo "Run parse.groovy with docker"
-ls -al
-pwd -P
-rm -f output.csv
-echo "Running /source/parse.groovy"
-sudo docker run -t --rm -v /var/jenkins_home/jobs/${JOB_NAME}/workspace/:/source webratio/groovy parse.groovy
-cat output.csv
-''')
   }
   publishers {
-    plotBuildData {
-      plot('siege_data', 'output.csv') {
-        title('Siege results')
-        logarithmic()
-        csvFile('output.csv') {
-          includeColumns('Transaction rate,Availability')
-        }
-      }
-    }
     downstreamParameterized {
       trigger("3.release-${PROJ_NAME}_GEN") {
         condition('SUCCESS')
