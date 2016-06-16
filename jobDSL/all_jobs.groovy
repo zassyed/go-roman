@@ -97,11 +97,11 @@ echo "testing_cid=$testing_cid" > props.env
     environmentVariables {
       propertiesFile('props.env')
     }
-    shell('''#!/bin/bash -x
+    shell('''
 cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${testing_cid})
 sudo docker run --rm rufus/siege-engine  -b -t60S http://$cip:8000/ > output 2>&1
 ''')
-    shell('''#!/bin/bash
+    shell('''
 avail=$(cat output | grep Availability)
 echo $avail
 if [[ "$avail" == *"100.00"* ]]
