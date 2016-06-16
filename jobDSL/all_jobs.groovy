@@ -39,12 +39,17 @@ version\\.txt'''
     scm('* * * * *')
   }
   steps{
-    shell('''#!/bin/bash -x
+    shell('''
 echo "version=\$(cat version.txt)" > props.env
 
 imageid=$(sudo docker build -q -t ${GITHUB_USERNAME}/http-app:snapshot . 2>/dev/null | awk -F ":" '{print $2}')
 
+cid=$(sudo docker ps --filter="name=testing-app" -q -a)
+if [ ! -z "$cid" ]
+then
 sudo docker rm -f testing-app
+fi
+
 cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${GITHUB_USERNAME}/http-app:snapshot)
 echo "cid=$cid" >> props.env
 echo "IMAGEID=$imageid" >> props.env
@@ -80,8 +85,12 @@ job("2.test-${PROJ_NAME}_GEN") {
       stringParam('cid', '', 'The container ID')
     }
   steps {
-    shell('''#!/bin/bash -x
+    shell('''
+cid=$(sudo docker ps --filter="name=testing-app" -q -a)
+if [ ! -z "$cid" ]
+then
 sudo docker rm -f testing-app
+fi
 testing_cid=$(sudo docker run -d --name testing-app -p 8000:8000  $IMAGEID)
 echo "testing_cid=$testing_cid" > props.env
 ''')
@@ -128,12 +137,16 @@ job("3.release-${PROJ_NAME}_GEN") {
       stringParam('VERSION', '', 'version of the application')
     }
   steps {
-    shell('''#!/bin/bash
+    shell('''
 sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:latest
 sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:$VERSION
 # no git here yet
 # sudo docker tag http-app/http-app:$(git describe)
+cid=$(sudo docker ps --filter="name=deploy-app" -q -a)
+if [ ! -z "$cid" ]
+then
 sudo docker rm -f deploy-app
+fi
 sudo docker run -d --name deploy-app -p 9999:8000 ${GITHUB_USERNAME}/http-app:latest
 ''')
     shell('''
