@@ -134,7 +134,7 @@ sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-ap
 # no git here yet
 # sudo docker tag http-app/http-app:$(git describe)
 sudo docker rm -f deploy-app
-sudo docker run -d --name deploy-app -p 81:8000 ${GITHUB_USERNAME}/http-app:latest
+sudo docker run -d --name deploy-app -p 5000:8000 ${GITHUB_USERNAME}/http-app:latest
 ''')
     shell('''
 sudo docker ps |grep ${GITHUB_USERNAME}/http-app
