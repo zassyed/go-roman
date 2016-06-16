@@ -90,7 +90,7 @@ echo "testing_cid=$testing_cid" > props.env
     }
     shell('''#!/bin/bash -x
 cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${testing_cid})
-sudo docker run --rm rufus/siege-engine http://$cip:8000/ > output 2>&1
+sudo docker run --rm rufus/siege-engine  -b -t60S http://$cip:8000/ > output 2>&1
 ''')
     shell('''#!/bin/bash
 avail=$(cat output | grep Availability)
