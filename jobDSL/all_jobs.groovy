@@ -102,12 +102,13 @@ cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${testing_
 sudo docker run --rm rufus/siege-engine  -b -t60S http://$cip:8000/ > output 2>&1
 ''')
     shell('''
-avail=$(cat output | grep Availability)
+avail=$(cat output | grep Availability | awk '{print $2}')
 echo $avail
-if [[ "$avail" == *"100.00"* ]]
+# shell uses = to compare strings, bash ==
+if [ "$avail" = "100.00" ]
 then
 	echo "Availability high enough"
-    sudo docker tag -f $IMAGEID ${GITHUB_USERNAME}/http-app:stable
+	sudo docker tag -f $IMAGEID ${GITHUB_USERNAME}/http-app:stable
 	exit 0
 else
 	echo "Availability too low"
