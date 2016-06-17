@@ -44,7 +44,7 @@ echo "version=\$(cat version.txt)" > props.env
 
 sudo docker build --no-cache -t ${GITHUB_USERNAME}/http-app:snapshot .
 
-imageid=$(sudo docker images | grep geirf/http-app | grep snapshot | awk '{print $3}')
+imageid=$(sudo docker images | grep ${GITHUB_USERNAME}/http-app | grep snapshot | awk '{print $3}')
 
 cid=$(sudo docker ps --filter="name=testing-app" -q -a)
 if [ ! -z "$cid" ]
