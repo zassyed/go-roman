@@ -16,3 +16,10 @@ Test that you can run it:
 
     docker run -d -p 8000:8000  --name myapp myapp:latest
     curl $(docker-machine ip code):8000
+
+
+## Test Driven Development
+
+Here's how to run the test suite:
+
+    docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp golang:1.6 go test -v
