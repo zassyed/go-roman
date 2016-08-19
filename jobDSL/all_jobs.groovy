@@ -117,7 +117,7 @@ job(releaseJobName) {
                 then
                     sudo docker rm -f deploy-app
                 fi
-                sudo docker run -d --name deploy-app -p 9999:8000 ${GITHUB_USERNAME}/http-app:latest'''.stripIndent())
+                sudo docker run -d --name deploy-app -p 8080:8000 ${GITHUB_USERNAME}/http-app:latest'''.stripIndent())
         shell('''\
                 sudo docker ps |grep ${GITHUB_USERNAME}/http-app
                 sudo docker images |grep ${GITHUB_USERNAME}/http-app'''.stripIndent())
