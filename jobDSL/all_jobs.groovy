@@ -86,7 +86,7 @@ job(testJobName) {
                 if [ "$avail" = "100.00" ]
                 then
 	                echo "Availability high enough"
-	                sudo docker tag -f $IMAGEID ${DOCKER_USERNAME}/http-app:stable
+	                sudo docker tag $IMAGEID ${DOCKER_USERNAME}/http-app:stable
 	                exit 0
                 else
 	                echo "Availability too low"
@@ -117,8 +117,8 @@ job(releaseJobName) {
     }
     steps {
         shell('''\
-                sudo docker tag -f ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:latest
-                sudo docker tag -f ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:$VERSION
+                sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:latest
+                sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:$VERSION
                 # no git here yet
                 # sudo docker tag http-app/http-app:$(git describe)
                 cid=$(sudo docker ps --filter="name=deploy-app" -q -a)
