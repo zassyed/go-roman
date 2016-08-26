@@ -1,5 +1,8 @@
-// Your GitHub username, pass it as a parameter to this seed job
-// GITHUB_USERNAME="john-doe"
+// Pass your Github username as a parameter to this seed job, e.g.
+// GITHUB_USERNAME="John-Doe"
+// Pass a docker image prefix as a parameter as well. 
+// If you have an account on docker hub, your hub username is ideal.
+// DOCKER_USERNAME="johndoe"
 
 projectName = "webserver"
 repositoryUrl = "https://github.com/${GITHUB_USERNAME}/gowebserver.git"
@@ -13,19 +16,21 @@ pipelineName = "${projectName}-pipeline_GEN"
 job(buildJobName) {
     logRotator(-1, 5, -1, -1)
     Utils.configureGit(it, "${repositoryUrl}")
-    Utils.configureEnv(it, "${GITHUB_USERNAME}")
+    envVars = [GITHUB_USERNAME: "${GITHUB_USERNAME}", 
+            DOCKER_USERNAME: "${DOCKER_USERNAME}"]
+    Utils.configureEnvVars(it, envVars)
     steps {
         shell('''\
             echo "version=\$(cat version.txt)" > props.env
-            sudo docker build --no-cache -t ${GITHUB_USERNAME}/http-app:snapshot .
-            imageid=$(sudo docker images | grep ${GITHUB_USERNAME}/http-app | grep snapshot | awk '{print $3}')
+            sudo docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .
+            imageid=$(sudo docker images | grep ${DOCKER_USERNAME}/http-app | grep snapshot | awk '{print $3}')
             cid=$(sudo docker ps --filter="name=testing-app" -q -a)
             if [ ! -z "$cid" ]
             then
                 sudo docker rm -f testing-app
             fi
 
-            cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${GITHUB_USERNAME}/http-app:snapshot)
+            cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${DOCKER_USERNAME}/http-app:snapshot)
             echo "cid=$cid" >> props.env
             echo "IMAGEID=$imageid" >> props.env
             cat props.env
@@ -41,6 +46,7 @@ job(buildJobName) {
                 condition('SUCCESS')
                 parameters {
                     predefinedProp('GITHUB_USERNAME', '${GITHUB_USERNAME}')
+                    predefinedProp('DOCKER_USERNAME', '${DOCKER_USERNAME}')
                     gitRevision(false)
                     propertiesFile('props.env', failTriggerOnMissing = true)
                 }
@@ -53,6 +59,7 @@ job(testJobName) {
     logRotator(-1, 40, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
+        stringParam('DOCKER_USERNAME', '', 'DOCKER_USERNAME')
         stringParam('version', '', 'version of the application')
         stringParam('IMAGEID', '', 'The docker image to test')
         stringParam('cid', '', 'The container ID')
@@ -79,7 +86,7 @@ job(testJobName) {
                 if [ "$avail" = "100.00" ]
                 then
 	                echo "Availability high enough"
-	                sudo docker tag -f $IMAGEID ${GITHUB_USERNAME}/http-app:stable
+	                sudo docker tag $IMAGEID ${DOCKER_USERNAME}/http-app:stable
 	                exit 0
                 else
 	                echo "Availability too low"
@@ -94,6 +101,7 @@ job(testJobName) {
                 parameters {
                     predefinedProp('VERSION', '${version}')
                     predefinedProp('GITHUB_USERNAME', '${GITHUB_USERNAME}')
+                    predefinedProp('DOCKER_USERNAME', '${DOCKER_USERNAME}')
                 }
             }
         }
@@ -104,12 +112,13 @@ job(releaseJobName) {
     logRotator(-1, 5, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
+        stringParam('DOCKER_USERNAME', '', 'DOCKER_USERNAME')
         stringParam('VERSION', '', 'version of the application')
     }
     steps {
         shell('''\
-                sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:latest
-                sudo docker tag -f ${GITHUB_USERNAME}/http-app:stable ${GITHUB_USERNAME}/http-app:$VERSION
+                sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:latest
+                sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:$VERSION
                 # no git here yet
                 # sudo docker tag http-app/http-app:$(git describe)
                 cid=$(sudo docker ps --filter="name=deploy-app" -q -a)
@@ -117,10 +126,10 @@ job(releaseJobName) {
                 then
                     sudo docker rm -f deploy-app
                 fi
-                sudo docker run -d --name deploy-app -p 8080:8000 ${GITHUB_USERNAME}/http-app:latest'''.stripIndent())
+                sudo docker run -d --name deploy-app -p 8080:8000 ${DOCKER_USERNAME}/http-app:latest'''.stripIndent())
         shell('''\
-                sudo docker ps |grep ${GITHUB_USERNAME}/http-app
-                sudo docker images |grep ${GITHUB_USERNAME}/http-app'''.stripIndent())
+                sudo docker ps |grep ${DOCKER_USERNAME}/http-app
+                sudo docker images |grep ${DOCKER_USERNAME}/http-app'''.stripIndent())
     }
 }
 

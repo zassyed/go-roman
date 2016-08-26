@@ -35,3 +35,15 @@ static def configureEnv(def job, def username) {
         }
     }
 }
+
+static def configureEnvVars(def job, def map) {
+    job.with {
+        properties {
+            environmentVariables {
+                keepSystemVariables(true)
+                keepBuildVariables(true)
+                envs(map)
+            }
+        }
+    }
+}
