@@ -1,6 +1,6 @@
 // Pass your Github username as a parameter to this seed job, e.g.
 // GITHUB_USERNAME="John-Doe"
-// Pass a docker image prefix as a parameter as well. 
+// Pass a docker image prefix as a parameter as well.
 // If you have an account on docker hub, your hub username is ideal.
 // DOCKER_USERNAME="johndoe"
 
@@ -16,29 +16,11 @@ pipelineName = "${projectName}-pipeline_GEN"
 job(buildJobName) {
     logRotator(-1, 5, -1, -1)
     Utils.configureGit(it, "${repositoryUrl}")
-    envVars = [GITHUB_USERNAME: "${GITHUB_USERNAME}", 
+    envVars = [GITHUB_USERNAME: "${GITHUB_USERNAME}",
             DOCKER_USERNAME: "${DOCKER_USERNAME}"]
     Utils.configureEnvVars(it, envVars)
     steps {
-        shell('''\
-            echo "version=\$(cat version.txt)" > props.env
-            sudo docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .
-            imageid=$(sudo docker images | grep ${DOCKER_USERNAME}/http-app | grep snapshot | awk '{print $3}')
-            cid=$(sudo docker ps --filter="name=testing-app" -q -a)
-            if [ ! -z "$cid" ]
-            then
-                sudo docker rm -f testing-app
-            fi
-
-            cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${DOCKER_USERNAME}/http-app:snapshot)
-            echo "cid=$cid" >> props.env
-            echo "IMAGEID=$imageid" >> props.env
-            cat props.env
-            cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cid})
-            sudo docker run --rm rufus/siege-engine -g http://$cip:8000/
-            [ $? -ne 0 ] && exit 1
-            sudo docker kill ${cid}
-            sudo docker rm ${cid}'''.stripIndent())
+        shell('./build.sh')
     }
     publishers {
         downstreamParameterized {
