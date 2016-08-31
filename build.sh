@@ -5,7 +5,7 @@
 echo "version=\$(cat version.txt)" > props.env
 
 # Build the docker image for the application
-docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .
+sudo docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .
 imageid=$(sudo docker images | grep ${DOCKER_USERNAME}/http-app | grep snapshot | awk '{print $3}')
 
 # Check if a testing-app is running - if so, remove it
@@ -22,10 +22,10 @@ echo "IMAGEID=$imageid" >> props.env
 cat props.env
 
 # Get the IP address of the container
-cip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cid})
+cip=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${cid})
 
 # Check the service is reachable, using seige engine
-docker run --rm rufus/siege-engine -g http://$cip:8000/
+sudo docker run --rm rufus/siege-engine -g http://$cip:8000/
 [ $? -ne 0 ] && exit 1
 
 # Clean up the container
