@@ -38,6 +38,7 @@ job(buildJobName) {
 }
 
 job(testJobName) {
+    Utils.configureGit(it, "${repositoryUrl}")
     logRotator(-1, 40, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
@@ -67,6 +68,7 @@ job(testJobName) {
 }
 
 job(releaseJobName) {
+    Utils.configureGit(it, "${repositoryUrl}")
     logRotator(-1, 5, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
