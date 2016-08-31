@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Fail on non-zero
+set -e
+
 sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:latest
 sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:$VERSION
 # no git here yet

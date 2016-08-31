@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Fail on non-zero
+set -e
+
 # Check if testing-app is running, if so, kill it
 cid=$(sudo docker ps --filter="name=testing-app" -q -a)
 if [ ! -z "$cid" ]

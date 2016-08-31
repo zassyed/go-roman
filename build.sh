@@ -1,6 +1,8 @@
 #!/bin/bash
-
 # Build script for gowebserver
+
+#Fail on non-zero
+set -e
 
 echo "version=\$(cat version.txt)" > props.env
 
