@@ -3,6 +3,9 @@
 #Fail on non-zero
 set -e
 
+# Host port mapping for testing-app
+hostport=8001
+
 # Check if testing-app is running, if so, kill it
 cid=$(sudo docker ps --filter="name=testing-app" -q -a)
 if [ ! -z "$cid" ]
@@ -11,7 +14,7 @@ then
 fi
 
 # Run the container, name it testing-app
-testing_cid=$(sudo docker run -d --name testing-app -p 8000:8000  $IMAGEID)
+testing_cid=$(sudo docker run -d --name testing-app -p $hostport:8000  $IMAGEID)
 echo "testing_cid=$testing_cid" > props.env
 
 # Get the container IP address, and run siege engine on it for 60 seconds

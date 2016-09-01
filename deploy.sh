@@ -3,6 +3,8 @@
 #Fail on non-zero
 set -e
 
+# Host port mapping for deploy-app
+hostport=8000
 
 sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:latest
 cmd="sudo docker tag ${DOCKER_USERNAME}/http-app:stable ${DOCKER_USERNAME}/http-app:$VERSION"
@@ -17,7 +19,7 @@ if [ ! -z "$cid" ]
 then
     sudo docker rm -f deploy-app
 fi
-sudo docker run -d --name deploy-app -p 8080:8000 ${DOCKER_USERNAME}/http-app:latest
+sudo docker run -d --name deploy-app -p $hostport:8000 ${DOCKER_USERNAME}/http-app:latest
 
 sudo docker ps |grep ${DOCKER_USERNAME}/http-app
 sudo docker images |grep ${DOCKER_USERNAME}/http-app
