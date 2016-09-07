@@ -7,7 +7,7 @@ set -e
 # Host port mapping for testing-app
 hostport=8001
 
-echo "version=\$(cat version.txt)" > props.env
+echo VERSION=$(cat version.txt) > props.env
 
 # Build the docker image for the application
 sudo docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .

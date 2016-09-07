@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Can run this as to use the file generated from build.sh:
+#
+#    env $(cat props.env | xargs) ./deploy.sh
+
 #Fail on non-zero
 set -e
 
