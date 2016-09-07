@@ -13,6 +13,9 @@ echo "version=\$(cat version.txt)" > props.env
 sudo docker build --no-cache -t ${DOCKER_USERNAME}/http-app:snapshot .
 imageid=$(sudo docker images | grep ${DOCKER_USERNAME}/http-app | grep snapshot | awk '{print $3}')
 
+# Run the unit tests
+sudo docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp golang:1.6 go test -v
+
 # Check if a testing-app is running - if so, remove it
 cid=$(sudo docker ps --filter="name=testing-app" -q -a)
 if [ ! -z "$cid" ]
