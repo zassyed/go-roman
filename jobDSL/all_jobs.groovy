@@ -43,7 +43,7 @@ job(testJobName) {
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
         stringParam('DOCKER_USERNAME', '', 'DOCKER_USERNAME')
-        stringParam('version', '', 'version of the application')
+        stringParam('VERSION', '', 'version of the application')
         stringParam('IMAGEID', '', 'The docker image to test')
         stringParam('cid', '', 'The container ID')
     }
@@ -58,7 +58,7 @@ job(testJobName) {
             trigger(releaseJobName) {
                 condition('SUCCESS')
                 parameters {
-                    predefinedProp('VERSION', '${version}')
+                    predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('GITHUB_USERNAME', '${GITHUB_USERNAME}')
                     predefinedProp('DOCKER_USERNAME', '${DOCKER_USERNAME}')
                 }
