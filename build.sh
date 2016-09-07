@@ -4,6 +4,9 @@
 #Fail on non-zero
 set -e
 
+# Host port mapping for testing-app
+hostport=8001
+
 echo "version=\$(cat version.txt)" > props.env
 
 # Build the docker image for the application
@@ -18,7 +21,7 @@ then
 fi
 
 # Run a container from the image and capture the container ID
-cid=$(sudo docker run -d --name testing-app -p 8001:8000 ${DOCKER_USERNAME}/http-app:snapshot)
+cid=$(sudo docker run -d --name testing-app -p $hostport:8000 ${DOCKER_USERNAME}/http-app:snapshot)
 echo "cid=$cid" >> props.env
 echo "IMAGEID=$imageid" >> props.env
 cat props.env
