@@ -14,7 +14,7 @@ func TestRomanOne(t *T) {
     // We create an http.Request object to test with. The http.Request is
     // totally customizable in every way that a real-life http request is, so
     // even the most intricate behavior can be tested
-    r, _ := http.NewRequest("GET", "/roman/1", nil)
+    r, _ := http.NewRequest("GET", "/roman/?number=1", nil)
 
     // httptest.Recorder implements the http.ResponseWriter interface, and as
     // such can be passed into ServeHTTP to receive the response. It will act as
@@ -43,10 +43,9 @@ func TestRomanOne(t *T) {
 
 }
 
-
 func TestRomanTwo(t *T) {
     n := romanGenerator(1)
-    r, _ := http.NewRequest("GET", "/roman/2", nil)
+    r, _ := http.NewRequest("GET", "/roman/?number=2", nil)
     w := httptest.NewRecorder()
     n.ServeHTTP(w, r)
     if w.Code != 200 {
@@ -56,5 +55,18 @@ func TestRomanTwo(t *T) {
     if body != fmt.Sprintf("Here's your number: II\n") {
         t.Fatalf("wrong body returned: %s", body)
     }
+}
 
+func TestRomanNoNumber(t *T) {
+    n := romanGenerator(1)
+    r, _ := http.NewRequest("GET", "/roman/", nil)
+    w := httptest.NewRecorder()
+    n.ServeHTTP(w, r)
+    if w.Code != 200 {
+        t.Fatalf("wrong code returned: %d", w.Code)
+    }
+    body := w.Body.String()
+    if body != fmt.Sprintf("Please pass the number as parameter in the URL") {
+        t.Fatalf("wrong body returned: %s", body)
+    }
 }
