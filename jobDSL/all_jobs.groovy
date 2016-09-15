@@ -4,8 +4,8 @@
 // If you have an account on docker hub, your hub username is ideal.
 // DOCKER_USERNAME="johndoe"
 
-projectName = "webserver"
-repositoryUrl = "https://github.com/${GITHUB_USERNAME}/gowebserver.git"
+projectName = "go-roman"
+repositoryUrl = "https://github.com/${GITHUB_USERNAME}/go-roman.git"
 
 deliverJobName = "0.deliver-${projectName}_GEN"
 buildJobName = "1.build-${projectName}_GEN"
