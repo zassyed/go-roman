@@ -5,6 +5,7 @@ static def configureGit(def job, def repositoryUrl, def branchDef) {
                 remote {
                     name('origin')
                     url(repositoryUrl)
+                    credentials('GithubCredentials')
                 }
                 branch(branchDef)
                 configure {
