@@ -7,15 +7,17 @@
 projectName = "webserver"
 repositoryUrl = "https://github.com/${GITHUB_USERNAME}/gowebserver.git"
 
+deliverJobName = "0.deliver-${projectName}_GEN"
 buildJobName = "1.build-${projectName}_GEN"
 testJobName = "2.test-${projectName}_GEN"
 releaseJobName = "3.release-${projectName}_GEN"
 viewName = "${projectName}-jobs_GEN"
 pipelineName = "${projectName}-pipeline_GEN"
 
+
 job(buildJobName) {
     logRotator(-1, 5, -1, -1)
-    Utils.configureGit(it, "${repositoryUrl}")
+    Utils.configureGit(it, "${repositoryUrl}", 'master')
     envVars = [GITHUB_USERNAME: "${GITHUB_USERNAME}",
             DOCKER_USERNAME: "${DOCKER_USERNAME}"]
     Utils.configureEnvVars(it, envVars)
@@ -38,7 +40,7 @@ job(buildJobName) {
 }
 
 job(testJobName) {
-    Utils.configureGit(it, "${repositoryUrl}")
+    Utils.configureGit(it, "${repositoryUrl}", 'master')
     logRotator(-1, 40, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
@@ -68,7 +70,7 @@ job(testJobName) {
 }
 
 job(releaseJobName) {
-    Utils.configureGit(it, "${repositoryUrl}")
+    Utils.configureGit(it, "${repositoryUrl}", 'master')
     logRotator(-1, 5, -1, -1)
     parameters {
         stringParam('GITHUB_USERNAME', '', 'GITHUB_USERNAME')
