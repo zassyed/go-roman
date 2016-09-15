@@ -14,6 +14,27 @@ releaseJobName = "3.release-${projectName}_GEN"
 viewName = "${projectName}-jobs_GEN"
 pipelineName = "${projectName}-pipeline_GEN"
 
+job(deliverJobName) {
+    logRotator(-1, 5, -1, -1)
+    Utils.configureGit(it, "${repositoryUrl}", 'origin/deliver/**')
+    envVars = [GITHUB_USERNAME: "${GITHUB_USERNAME}",
+            DOCKER_USERNAME: "${DOCKER_USERNAME}"]
+    Utils.configureEnvVars(it, envVars)
+    wrappers {
+        pretestedIntegration("SQUASHED","master","origin")
+    }
+    steps {
+        shell('./build.sh')
+    }
+    publishers {
+        pretestedIntegration()
+        downstreamParameterized {
+            trigger(buildJobName) {
+                condition('SUCCESS')
+            }
+        }
+    }
+}
 
 job(buildJobName) {
     logRotator(-1, 5, -1, -1)
