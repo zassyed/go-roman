@@ -8,15 +8,6 @@ static def configureGit(def job, def repositoryUrl, def branchDef) {
                     credentials('GithubCredentials')
                 }
                 branch(branchDef)
-                configure {
-                    it / 'extensions' << 'hudson.plugins.git.extensions.impl.PathRestriction' {
-                        'includedRegions' '''\
-                                            GoWebServer/.*\\.go
-                                            GoWebServer/.*\\.html
-                                            GoWebServer/.*\\.png
-                                            version\\.txt'''.stripIndent()
-                    }
-                }
             }
         }
         triggers {
